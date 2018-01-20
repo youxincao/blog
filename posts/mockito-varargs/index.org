@@ -1,0 +1,102 @@
+#+BEGIN_COMMENT
+.. title: mockito varargs
+.. slug: mockito-varargs
+.. date: 2018-01-20 13:10:10 UTC+08:00
+.. tags: mockito, unit test, varargs
+.. category: mockito
+.. link: 
+.. description: 使用mockito去mock可变参函数
+.. type: text
+#+END_COMMENT
+
+介绍如何使用mockito去mock可变参数的函数，如Java的String.format，以及Android的Resource.getString等等。
+* Mockito的通常用法
+Mockito通常用在单元测试中，给定指定的输入，然后返回特定的值。比如
+
+#+BEGIN_SRC java
+//创建mock对象，参数可以是类，也可以是接口  
+List<String> list = mock(List.class);  
+//设置方法的预期返回值  
+when(list.get(0)).thenReturn("helloworld");  
+String result = list.get(0);  
+//验证方法调用(是否调用了get(0))  
+verify(list).get(0);  
+//junit测试  
+Assert.assertEquals("helloworld", result);  
+#+END_SRC 
+
+#+BEGIN_HTML
+<!--more-->
+#+END_HTML
+
+* 通常用法的局限性
+上诉例子中，输入和输出都是确定的，输入0，返回helloworld。但是对于Android中Context.getString这种可变参数的方法，
+如果要一一枚举输入输出可能就比较麻烦。
+
+#+BEGIN_SRC java
+private Context context;
+
+@Before
+public void setup() {
+   context = Mockito.mock( Context.class );
+   when( context.getString( R.string.hello_format, "world" ) ).thenReturn( "hello world" );
+   when( context.getString( R.string.hello_range , "1" , "2") ).thenReturn( "from 1 to 2" );
+}
+
+@Test
+public void contextGetString() throws Exception {
+  assertEquals( "hello world", context.getString( R.string.hello_format, "world" ) );
+  assertEquals( "from 1 to 2", context.getString( R.string.hello_range, "1", "2" ) );
+}
+#+END_SRC
+
+* 解决方案
+在Mock Context.getString的时候，使用可变参数。然后捕获到用户输入的参数，调用String.format完成字符串的拼接，然后返回结果。
+#+BEGIN_SRC java
+  private Context context;
+
+  @Before
+  public void setup() {
+     
+    // Android 平台的特殊性，需要准备好String id到String format 格式的format。
+    // 实际应用中可以在程序中使用dom解析资源文件和反射R得到这个map。
+    final Map<Integer, String> map = new HashMap();
+    map.put( R.string.hello_format, "hello %1$s" );
+    map.put( R.string.hello_range, "from %1$s to %2$s" );
+
+    context = Mockito.mock( Context.class );
+    final Set<Map.Entry<Integer, String>> entries = map.entrySet();
+    for ( final Map.Entry<Integer, String> entry : entries ) {
+      // 便利mock所有key的get string方法。
+      when( context.getString( eq( entry.getKey() ), argThat( new GetStringVarargMatcher() ) ) ).thenAnswer( new Answer<String>() {
+        @Override
+        public String answer( InvocationOnMock invocation ) throws Throwable {
+          Object[] args = new Object[invocation.getArguments().length - 1];
+          for ( int i = 1; i < invocation.getArguments().length; i++ ) {
+            args[i - 1] = invocation.getArgument( i );
+          }
+          return String.format( entry.getValue(), args );
+        }
+      } );
+    }
+  }
+
+  static class GetStringVarargMatcher implements ArgumentMatcher, VarargMatcher {
+
+    @Override
+    public boolean matches( Object argument ) {
+      return true;
+    }
+  }
+
+  @Test
+  public void contextGetString() throws Exception {
+    assertEquals( "hello world", context.getString( R.string.hello_format, "world" ) );
+    assertEquals( "from 1 to 2", context.getString( R.string.hello_range, "1", "2" ) );
+  }
+#+END_SRC
+* 优化
+ 是否同时捕获到String id和后面的可变参数？这样就不需要循环，mock所有的key了。
+* 参考
++ [[https://static.javadoc.io/org.mockito/mockito-core/2.2.9/org/mockito/ArgumentMatcher.html][Mockito ArgumentMatcher JavaDoc]]
++ [[http://stackoverflow.com/questions/2631596/how-to-properly-match-varargs-in-mockito][StackOverflow How to properly match varargs in mockito]]

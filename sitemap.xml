@@ -19,7 +19,7 @@
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/archive.html</loc>
-  <lastmod>2018-01-20T04:37:00Z</lastmod>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/authors/</loc>
@@ -35,11 +35,15 @@
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/categories/</loc>
-  <lastmod>2018-01-19T13:38:00Z</lastmod>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/categories/blog/</loc>
   <lastmod>2018-01-19T13:38:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://youxincao.github.io/blog/categories/cat_mockito/</loc>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/categories/cat_nikola/</loc>
@@ -50,12 +54,24 @@
   <lastmod>2018-01-19T13:38:00Z</lastmod>
  </url>
  <url>
+  <loc>http://youxincao.github.io/blog/categories/mockito/</loc>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
+ </url>
+ <url>
   <loc>http://youxincao.github.io/blog/categories/nikola/</loc>
   <lastmod>2018-01-19T13:38:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/categories/python/</loc>
   <lastmod>2018-01-19T13:38:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://youxincao.github.io/blog/categories/unit-test/</loc>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://youxincao.github.io/blog/categories/varargs/</loc>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/galleries/</loc>
@@ -75,7 +91,7 @@
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/listings/hello.py.html</loc>
-  <lastmod>2018-01-19T14:32:00Z</lastmod>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/pages/about-nikola/</loc>
@@ -140,6 +156,10 @@
  <url>
   <loc>http://youxincao.github.io/blog/posts/javascript-basic/</loc>
   <lastmod>2018-01-19T13:38:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://youxincao.github.io/blog/posts/mockito-varargs/</loc>
+  <lastmod>2018-01-20T05:13:00Z</lastmod>
  </url>
  <url>
   <loc>http://youxincao.github.io/blog/posts/welcome-to-nikola/</loc>
