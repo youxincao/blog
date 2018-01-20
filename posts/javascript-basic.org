@@ -1,0 +1,126 @@
+#+BEGIN_COMMENT
+.. title: javascript basic
+.. slug: javascript-basic
+.. date: 2018-01-19 16:18:39 UTC+08:00
+.. tags: 
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+#+END_COMMENT
+
+* 类型转换String -> num, And num -> String
+
+#+BEGIN_SRC js 
+  var a = "42";
+  var b = Number(a);
+  var c = String(b);
+
+  console.log(a);
+  console.log(b);
+  console.log(c);
+#+END_SRC
+
+#+RESULTS:
+: 42
+: 42
+: 42
+: undefined
+
+{{{TEASER_END}}}
+
+* JavaScript Scope
+JavaScaript '{}' do not create scope. The variable define in an scope can not access out the scope.
+The function will create score, the inner score can access the variable define in outside scope.
+
+* JavaScript built-in types
+- string 
+- boolean 
+- number
+- null and undefined
+- object
+- symbol
+
+You can use method "typeof" get the type of an variable.
+
+* Immediately Invoked Function Expressions (IIFEs)
+
+#+BEGIN_SRC js
+  (function IIFE(){
+      console.log( "Hello!" );
+  })();
+#+END_SRC
+
+#+RESULTS:
+: Hello!
+: undefined
+
+
+#+BEGIN_SRC js
+  var a = 42;
+
+  (function IIFE(){
+      var a = 10;
+      console.log( a ); // 10
+  })();
+
+  console.log( a ); // 42
+#+END_SRC
+
+IIFE in this fashion is often used to declare variables that won’t affect the surrounding code outside the IIFE:
+
+#+BEGIN_SRC js
+  var x = (function IIFE(){ return 42; })(); x; // 42
+#+END_SRC
+The 42 value gets returned from the IIFE-named function being executed, and is then assigned to x.
+
+* Clojure
+Clojure is a way to "remember" and continue to access a function's scope(it's scope),
+even once the function has finish running.
+
+#+BEGIN_SRC js
+  function makeAdder(x){
+      function add(y){
+          return y + x;
+      }
+      return add;
+  }
+
+  var plusOne = makeAdder(1);
+  var plusTen = makeAdder(10);
+
+  console.log(plusOne(3)); // 4
+  console.log(plusOne(41)); // 42
+
+  console.log(plusTen(2)); // 12
+#+END_SRC
+
+#+RESULTS:
+: 4
+: 42
+: 12
+: undefined
+
+* Module
+Modules let you define private implementation details (variable, functions) that 
+are hidden fomr the outside world, as well as a public API that is accessible from the outside.
+
+#+BEGIN_SRC js
+  function User(){
+      var username, password;
+
+      function doLogin(user,pw){
+          username = user;
+          password = pw;
+      }
+
+      var publicAPI = {
+          login: doLogin
+      };
+
+      return publicAPI;
+  }
+
+  var user = User();
+  user.login("fred", "1234");
+#+END_SRC
