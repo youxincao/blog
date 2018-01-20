@@ -25,9 +25,7 @@ verify(list).get(0);
 Assert.assertEquals("helloworld", result);  
 #+END_SRC 
 
-#+BEGIN_HTML
-<!--more-->
-#+END_HTML
+{{{TEASER_END}}}
 
 * 通常用法的局限性
 上诉例子中，输入和输出都是确定的，输入0，返回helloworld。但是对于Android中Context.getString这种可变参数的方法，

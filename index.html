@@ -71,7 +71,8 @@
             <p class="dateline"><a href="posts/mockito-varargs/" rel="bookmark"><time class="published dt-published" datetime="2018-01-20T13:10:10+08:00" title="2018-01-20 13:10">2018-01-20 13:10</time></a></p>
         </div>
     </header><div class="p-summary entry-summary">
-    <p>
+    <div>
+<p>
 介绍如何使用mockito去mock可变参数的函数，如Java的String.format，以及Android的Resource.getString等等。
 </p>
 <div id="outline-container-sec-1" class="outline-2">
@@ -92,105 +93,8 @@ Mockito通常用在单元测试中，给定指定的输入，然后返回特定�
 <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="s">"helloworld"</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>  
 </pre></div>
 
-<!--more-->
+<p class="more"><a href="posts/mockito-varargs/">更多…</a></p>
 </div>
-</div>
-
-<div id="outline-container-sec-2" class="outline-2">
-<h2 id="sec-2">通常用法的局限性</h2>
-<div class="outline-text-2" id="text-2">
-<p>
-上诉例子中，输入和输出都是确定的，输入0，返回helloworld。但是对于Android中Context.getString这种可变参数的方法，
-如果要一一枚举输入输出可能就比较麻烦。
-</p>
-
-<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="n">Context</span> <span class="n">context</span><span class="o">;</span>
-
-<span class="nd">@Before</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
-   <span class="n">context</span> <span class="o">=</span> <span class="n">Mockito</span><span class="o">.</span><span class="na">mock</span><span class="o">(</span> <span class="n">Context</span><span class="o">.</span><span class="na">class</span> <span class="o">);</span>
-   <span class="n">when</span><span class="o">(</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_format</span><span class="o">,</span> <span class="s">"world"</span> <span class="o">)</span> <span class="o">).</span><span class="na">thenReturn</span><span class="o">(</span> <span class="s">"hello world"</span> <span class="o">);</span>
-   <span class="n">when</span><span class="o">(</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_range</span> <span class="o">,</span> <span class="s">"1"</span> <span class="o">,</span> <span class="s">"2"</span><span class="o">)</span> <span class="o">).</span><span class="na">thenReturn</span><span class="o">(</span> <span class="s">"from 1 to 2"</span> <span class="o">);</span>
-<span class="o">}</span>
-
-<span class="nd">@Test</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextGetString</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-  <span class="n">assertEquals</span><span class="o">(</span> <span class="s">"hello world"</span><span class="o">,</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_format</span><span class="o">,</span> <span class="s">"world"</span> <span class="o">)</span> <span class="o">);</span>
-  <span class="n">assertEquals</span><span class="o">(</span> <span class="s">"from 1 to 2"</span><span class="o">,</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_range</span><span class="o">,</span> <span class="s">"1"</span><span class="o">,</span> <span class="s">"2"</span> <span class="o">)</span> <span class="o">);</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-</div>
-
-<div id="outline-container-sec-3" class="outline-2">
-<h2 id="sec-3">解决方案</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-在Mock Context.getString的时候，使用可变参数。然后捕获到用户输入的参数，调用String.format完成字符串的拼接，然后返回结果。
-</p>
-<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="n">Context</span> <span class="n">context</span><span class="o">;</span>
-
-<span class="nd">@Before</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
-
-  <span class="c1">// Android 平台的特殊性，需要准备好String id到String format 格式的format。</span>
-  <span class="c1">// 实际应用中可以在程序中使用dom解析资源文件和反射R得到这个map。</span>
-  <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
-  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_format</span><span class="o">,</span> <span class="s">"hello %1$s"</span> <span class="o">);</span>
-  <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_range</span><span class="o">,</span> <span class="s">"from %1$s to %2$s"</span> <span class="o">);</span>
-
-  <span class="n">context</span> <span class="o">=</span> <span class="n">Mockito</span><span class="o">.</span><span class="na">mock</span><span class="o">(</span> <span class="n">Context</span><span class="o">.</span><span class="na">class</span> <span class="o">);</span>
-  <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">entries</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">entrySet</span><span class="o">();</span>
-  <span class="k">for</span> <span class="o">(</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">entries</span> <span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// 便利mock所有key的get string方法。</span>
-    <span class="n">when</span><span class="o">(</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">eq</span><span class="o">(</span> <span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">),</span> <span class="n">argThat</span><span class="o">(</span> <span class="k">new</span> <span class="n">GetStringVarargMatcher</span><span class="o">()</span> <span class="o">)</span> <span class="o">)</span> <span class="o">).</span><span class="na">thenAnswer</span><span class="o">(</span> <span class="k">new</span> <span class="n">Answer</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
-      <span class="nd">@Override</span>
-      <span class="kd">public</span> <span class="n">String</span> <span class="nf">answer</span><span class="o">(</span> <span class="n">InvocationOnMock</span> <span class="n">invocation</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
-	<span class="n">Object</span><span class="o">[]</span> <span class="n">args</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">invocation</span><span class="o">.</span><span class="na">getArguments</span><span class="o">().</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">];</span>
-	<span class="k">for</span> <span class="o">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArguments</span><span class="o">().</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
-	  <span class="n">args</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArgument</span><span class="o">(</span> <span class="n">i</span> <span class="o">);</span>
-	<span class="o">}</span>
-	<span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">args</span> <span class="o">);</span>
-      <span class="o">}</span>
-    <span class="o">}</span> <span class="o">);</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kd">static</span> <span class="kd">class</span> <span class="nc">GetStringVarargMatcher</span> <span class="kd">implements</span> <span class="n">ArgumentMatcher</span><span class="o">,</span> <span class="n">VarargMatcher</span> <span class="o">{</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span> <span class="n">Object</span> <span class="n">argument</span> <span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="nd">@Test</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextGetString</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-  <span class="n">assertEquals</span><span class="o">(</span> <span class="s">"hello world"</span><span class="o">,</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_format</span><span class="o">,</span> <span class="s">"world"</span> <span class="o">)</span> <span class="o">);</span>
-  <span class="n">assertEquals</span><span class="o">(</span> <span class="s">"from 1 to 2"</span><span class="o">,</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span> <span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">hello_range</span><span class="o">,</span> <span class="s">"1"</span><span class="o">,</span> <span class="s">"2"</span> <span class="o">)</span> <span class="o">);</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-</div>
-<div id="outline-container-sec-4" class="outline-2">
-<h2 id="sec-4">优化</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-是否同时捕获到String id和后面的可变参数？这样就不需要循环，mock所有的key了。
-</p>
-</div>
-</div>
-<div id="outline-container-sec-5" class="outline-2">
-<h2 id="sec-5">参考</h2>
-<div class="outline-text-2" id="text-5">
-<ul class="org-ul">
-<li>
-<a href="https://static.javadoc.io/org.mockito/mockito-core/2.2.9/org/mockito/ArgumentMatcher.html">Mockito ArgumentMatcher JavaDoc</a>
-</li>
-<li>
-<a href="http://stackoverflow.com/questions/2631596/how-to-properly-match-varargs-in-mockito">StackOverflow How to properly match varargs in mockito</a>
-</li>
-</ul>
 </div>
 </div>
     </div>
