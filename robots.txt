@@ -1,0 +1,4 @@
+Sitemap: http://youxincao.github.io/blog/sitemapindex.xml
+
+User-Agent: *
+Host: youxincao.github.io
