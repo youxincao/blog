@@ -1,0 +1,26 @@
+#+BEGIN_COMMENT
+.. title: Factory Design Pattern
+.. slug: factory-design-pattern
+.. date: 2018-01-22 08:31:01 UTC+08:00
+.. tags: draft
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+#+END_COMMENT
+
+
+A seperate component reponsible sove for the wholesase(not piecewise)
+createion of objects.
+
+* Motivation
+- Object creation logic becomes too convoluted.
+- Constructor is not descriptive.
+  1. Name mandated by name of containing type.
+  2. Cannot overload with save sets of arguments with differnent names.
+  3. Can turn into optional paramenter hell.
+- Object creation(not picewise,unlink Builder) can be outsourced to
+  1. A seperate function( Factory method)
+  2. That exist in a seperate class( Factory)
+  3. You can even have a hierarchy of classes with Abstract Factory.
+

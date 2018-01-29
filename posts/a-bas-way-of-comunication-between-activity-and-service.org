@@ -1,0 +1,29 @@
+#+BEGIN_COMMENT
+.. title: Android中Activity和Service交互的误区
+.. slug: a-bas-way-of-comunication-between-activity-and-service
+.. date: 2018-01-20 16:00:47 UTC+08:00
+.. tags: Android, Activity，Service
+.. category: Android Basic
+.. link: 
+.. description: 
+.. type: text
+#+END_COMMENT
+
+* 误区
+最近在准备面试的时候，看到网上有关于Activity和service交互的问题。一般都会说主要有这几种方式。
+1. 使用Local Boardcast
+2. 使用EventBus,Otto这种数据总线。
+3. 使用bindService的方式，然后在自定义的bind中返回service对象。
+关于第三种方式，我其实是很抵触的。首先，在Activity中引用Service的方式会造成Actibity和Service
+的强耦合。而且Service是完全暴露给了Activity。就算使用这种方式，也最好应该先定义出Activity和
+Service之间的接口，然后让Service实现该接口，让Activity持有这个接口。
+然后其实第三种方式，还有一个bug。在多进程的情况下，Activity拿到的binder事BinderProxy，并不是
+和Service中定义的Binder类型，所以如果不判断类型就进行强转的话，是会抛异常的。
+
+{{{TEASER_END}}}
+
+* 多进程下的Activity和Service的交互
+在多进程的强狂下，实际上上诉的通过EventBus,Otto也是失效的，只有第一种方式可以正常通讯。但是使用广播，
+感觉有点怪怪的。再用一个APP内，却非得使用Boardcast的方式通讯。
+其实Android平台已经给出了Activity和 Service交互的正确方式，就是通过Bind完成后，返回的Ibinder对象。
+但是可能通过IBinder这种方式需要使用AIDL，使用起来比较麻烦，所以被很多人忽视了。

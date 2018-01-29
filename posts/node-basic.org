@@ -1,0 +1,17 @@
+#+BEGIN_COMMENT
+.. title: Node Basic
+.. slug: node-basic
+.. date: 2018-01-23 17:39:21 UTC+08:00
+.. tags: draft
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+#+END_COMMENT
+
+
+在这里书写你的文章。
+
+* Some reference
+[[https://www.nodebeginner.org/index-zh-cn.html][Node basic concept]]
+[[http://blog.mixu.net/2011/02/01/understanding-the-node-js-event-loop/][Understanding the node.js event loop]]
